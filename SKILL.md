@@ -7,24 +7,33 @@ description: 公众号文章创作与发布。完整流程：自动场景识别 
 
 自动化公众号文章创作与发布全流程。
 
+## 核心原则
+
+**减少 AI 味的写作技巧**：
+1. 避免套路句式：首先/其次/最后、 需要注意的是
+2. 增加具体细节：案例、代码、亲身经历
+3. 自然过渡：少用列表，用流畅段落
+4. 口语化表达：适当使用反问、感叹
+5. 真实观点：有自己的判断和思考
+
+---
+
 ## 完整流程
 
 ```
 自动识别 → 获取内容 → 质量检查 → 写作 → AI配图 + 封面图 → 格式优化 → 发布
 ```
 
-**并行处理**: 配图生成与封面图生成可并行执行
-
 ---
 
 ## 触发条件
 
-| 输入类型 | 识别特征 | 处理方式 |
-|---------|---------|---------|
-| X/网页链接 | x.com、twitter.com、http | 获取内容 → 写作 → 配图 → 封面 → 发布 |
-| 英文文章 | 纯英文、English | 翻译 → 写作 → 配图 → 封面 → 发布 |
-| 仅有标题 | 纯中文无链接 | article-writer 调研 → 写作 → 配图 → 封面 → 发布 |
-| 直接发布 | "直接发布"、"走完整流程" | 跳过草稿，直接完整流程 |
+| 输入类型 | 处理方式 |
+|---------|---------|
+| X/网页链接 | 获取内容 → 写作 → 配图 → 封面 → 发布 |
+| 英文文章 | 翻译 → 写作 → 配图 → 封面 → 发布 |
+| 仅有标题 | article-writer 调研 → 写作 → 配图 → 封面 → 发布 |
+| 直接发布 | 跳过草稿，直接完整流程 |
 
 ---
 
@@ -41,89 +50,99 @@ npx -y bun ~/.claude/skills/baoyu-url-to-markdown/scripts/main.ts <url>
 ```bash
 cd "/Users/wxhou/Documents/obsidian-note/微信公众号"
 content init 文章标题 --workspace wechat
-# /specify → /topic → /research → /write
 ```
 
 ---
 
-## Step 2: 质量检查 (自动化)
+## Step 2: 质量检查
 
-使用 validator 模式自动检查：
-
-### 2.1 错别字检测
+### 错别字检测
 ```bash
-# 检查常见错别字
-grep -E "份饭|成份|其它|其它|一部份|帐号|帐户" article.md
+grep -E "份饭|成份|其它|一部份|帐号|帐户" article.md
 ```
 
-### 2.2 可读性检查
-- 单句长度不超过 40 字
-- 段落不超过 3 行
+### 可读性检查
+- 单句 ≤ 40 字
+- 段落 ≤ 3 行
 - 使用中文标点
 
-### 2.3 敏感词检测
-```bash
-# 敏感词列表检查
-grep -iE "敏感词1|敏感词2|敏感词3" article.md
-```
-
-### 2.4 标题检查
-- 标题长度 20-30 字
-- 有数字/疑问/对比更佳
-
-**质量检查循环**: 检查 → 修复 → 重新检查，直到通过
+### AI 味检测（新增）
+检查并修改以下模式：
+- "首先/其次/最后" → 改为自然过渡
+- "需要注意的是" → 删除或改写
+- "总的来说" → 用口语化表达
+- 连续 3 个以上列表 → 改为段落叙述
 
 ---
 
-## Step 3: AI 配图
+## Step 3: 写作技巧
 
-使用 `baoyu-article-illustrator` 或 `baoyu-image-gen`:
+### 开头写法
+- 场景切入：从一个具体问题/故事开始
+- 痛点共鸣：让读者觉得"说的就是我"
+- 数据吸引：用惊人数据引发好奇
+
+### 中间写法
+- 案例驱动：每个观点配一个真实案例
+- 代码演示：技术文章必须有可运行代码
+- 对比分析：优缺点、方案对比
+- 细节丰富：避免泛泛而谈
+
+### 结尾写法
+- 行动呼吁：给读者一个具体行动
+- 开放问题：引发思考和讨论
+- 个人感悟：分享真实想法
+
+### 避免的句式
+```
+❌ 首先...其次...最后...
+❌ 需要注意的是...
+❌ 综上所述...
+❌ 相信...
+❌ 由此可见...
+```
+
+### 推荐句式
+```
+✅ 说到这个...
+✅ 我之前...
+✅ 你们有没有遇到过...
+✅ 说白了就是...
+✅ 举个例子...
+```
+
+---
+
+## Step 4: AI 配图
 
 ```bash
-# 分析文章，自动识别配图位置和风格
 npx -y bun ~/.claude/skills/baoyu-article-illustrator/scripts/main.ts article.md
 ```
 
-**备用方案** (API 失败时):
+**备用方案**:
 ```bash
 python3 ~/.claude/skills/baoyu-image-gen/scripts/modelscope_fallback.py "prompt" output.png
 ```
 
 ---
 
-## Step 4: 封面图 (新增)
-
-使用 `baoyu-cover-image` 生成封面:
+## Step 5: 封面图
 
 ```bash
-npx -y bun ~/.claude/skills/baoyu-cover-image/scripts/main.ts \
-  --prompt "文章标题" \
-  --type infographic \
-  --palette tech \
-  --mood professional \
-  --image cover.png
+npx -y bun ~/.claude/skills/baoyu-cover-image/scripts/main.ts article.md --style blueprint
 ```
 
 ---
 
-## Step 5: 格式优化
+## Step 6: 格式优化
 
 ```bash
-# Markdown 转 HTML
-npx -y bun ~/.claude/skills/baoyu-markdown-to-html/scripts/main.md \
-  article.md \
-  --theme grace \
-  --output article.html
+npx -y bun ~/.claude/skills/baoyu-markdown-to-html/scripts/main.ts article.md --theme grace
 ```
-
-**手动优化项**:
-- 二级标题: 彩色背景 (#0F4C81)
-- 引用块: 深蓝色强调
-- 分隔线: `---` 章节区分
 
 ---
 
-## Step 6: 发布
+## Step 7: 发布
 
 ```bash
 npx -y bun ~/.claude/skills/baoyu-post-to-wechat/scripts/wechat-api.ts \
@@ -136,12 +155,10 @@ npx -y bun ~/.claude/skills/baoyu-post-to-wechat/scripts/wechat-api.ts \
 
 ## 并行处理
 
-配图生成与封面图生成可并行执行:
-
+配图和封面图可并行生成：
 ```bash
-# 后台并行执行
-npx -y bun ~/.claude/skills/baoyu-article-illustrator/... &
-npx -y bun ~/.claude/skills/baoyu-cover-image/... &
+npx -y bun .../baoyu-article-illustrator/... &
+npx -y bun .../baoyu-cover-image/... &
 wait
 ```
 
@@ -149,17 +166,15 @@ wait
 
 ## 错误处理
 
-| 问题 | 解决方案 |
-|-----|---------|
-| 链接获取失败 | 使用浏览器方式 baoyu-url-to-markdown |
-| 图片生成失败 | 使用 modelscope_fallback.py 备用 |
-| API 白名单 | 添加 IP 到微信后台 |
-| 格式异常 | 使用 --theme default |
+| 问题 | 解决 |
+|-----|------|
+| 链接失败 | 用 baoyu-url-to-markdown |
+| 图片失败 | modelscope_fallback.py |
+| API 白名单 | 加 IP 到微信后台 |
 
 **关闭浏览器**:
 ```bash
 mcp__chrome-devtools__close_page --pageId <ID>
-mcp__chrome-devtools__list_pages
 ```
 
 ---
@@ -172,9 +187,8 @@ mcp__chrome-devtools__list_pages
 ## 依赖 Skills
 
 - baoyu-post-to-wechat
+- baoyu-cover-image
+- baoyu-article-illustrator
 - baoyu-markdown-to-html
 - baoyu-image-gen
-- baoyu-article-illustrator
-- baoyu-cover-image
 - baoyu-danger-x-to-markdown
-- baoyu-url-to-markdown

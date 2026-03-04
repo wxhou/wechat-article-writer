@@ -82,6 +82,22 @@ cd "/Users/wxhou/Documents/obsidian-note/微信公众号"
 content init 文章标题 --workspace wechat
 ```
 
+然后在 Claude Code 中使用九步写作流程：
+
+```
+1. /specify    - 定义创作需求
+2. /topic      - 选题讨论（提供3-4个方向）
+3. /research   - 信息搜索与调研 ⭐
+4. /collect    - 搜索个人素材库
+5. /write      - 创作初稿
+6. /review     - 三遍审校（降低AI味）
+7. /images     - 配图建议
+8. /check      - 发布前检查
+9. /publish    - 发布指南
+```
+
+**推荐流程**：`specify → topic → research → write → review → images → check`
+
 ---
 
 ## Step 2: 质量检查

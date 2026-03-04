@@ -71,9 +71,23 @@ description: 公众号文章创作与发布。完整流程：自动场景识别 
 
 ## Step 1: 获取内容
 
-**X/网页链接**:
+**X/网页链接** - 方式1（需要登录）:
 ```bash
 npx -y bun ~/.claude/skills/baoyu-danger-x-to-markdown/scripts/main.ts <url>
+```
+
+**X/网页链接** - 方式2（无需登录，推荐）:
+```bash
+# 使用 Jina Reader（无需登录，直接获取）
+https://r.jina.ai/<X链接>
+# 例如：https://r.jina.ai/https://x.com/username/status/123456
+```
+
+**普通网页**:
+```bash
+npx -y bun ~/.claude/skills/baoyu-url-to-markdown/scripts/main.ts <url>
+# 或直接用 Jina Reader
+https://r.jina.ai/<网页链接>
 ```
 
 **仅有标题**:
@@ -206,12 +220,19 @@ mcp__chrome-devtools__close_page --pageId <ID>
 
 ## 依赖 Skills
 
-**可用 slash 命令**：
-- `/baoyu-article-illustrator` - 文章配图
-- `/baoyu-cover-image` - 封面图生成
-- `/baoyu-url-to-markdown` - 网页转 Markdown
-- `/baoyu-danger-x-to-markdown` - X 转 Markdown
+**获取内容**：
+- `/baoyu-url-to-markdown` - 网页转 Markdown（需要浏览器）
+- `/baoyu-danger-x-to-markdown` - X 转 Markdown（需要登录）
+- Jina Reader - `https://r.jina.ai/<链接>`（无需登录，推荐）
 
-**需要用 npx bun**：
+**文章配图**：
+- `/baoyu-article-illustrator` - 文章配图
+
+**封面图**：
+- `/baoyu-cover-image` - 封面图生成
+
+**格式转换**：
 - `baoyu-markdown-to-html` - Markdown 转 HTML
+
+**发布**：
 - `baoyu-post-to-wechat` - 发布到公众号
